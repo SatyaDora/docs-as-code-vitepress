@@ -1,0 +1,69 @@
+openapi: 3.0.0
+info:
+  title: Surf Weather API
+  version: 1.0.0
+  description: |
+    The Surf Weather API provides real-time weather data for surf and
+    coastal applications. API v1 is stable and production-ready.
+  contact:
+    email: support@surfweather.com
+servers:
+  - url: https://api.openweathermap.org/data/2.5
+    description: Production server
+
+paths:
+  /weather:
+    get:
+      summary: Get current weather by city name
+      description: Returns current weather conditions for the requested city.
+      parameters:
+        - in: query
+          name: q
+          required: true
+          schema:
+            type: string
+          description: City name (for example, Goa)
+          example: Goa
+        - in: query
+          name: appid
+          required: true
+          schema:
+            type: string
+          description: Your API key
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WeatherResponse'
+              example:
+                weather:
+                  - description: clear sky
+        '400':
+          description: Bad request — verify parameters
+        '401':
+          description: Invalid API key
+        '404':
+          description: City not found
+        '429':
+          description: Rate limit exceeded — retry later
+        '500':
+          description: Server error — retry or contact support
+
+components:
+  schemas:
+    WeatherResponse:
+      type: object
+      properties:
+        weather:
+          type: array
+          items:
+            $ref: '#/components/schemas/WeatherCondition'
+    WeatherCondition:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Human-readable summary of current conditions
+          example: clear sky
